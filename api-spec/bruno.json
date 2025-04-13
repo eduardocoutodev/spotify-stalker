@@ -1,9 +1,6 @@
 {
   "version": "1",
-  "name": "spotify-tracker",
+  "name": "spotify-stalker",
   "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
+  "ignore": ["node_modules", ".git"]
 }

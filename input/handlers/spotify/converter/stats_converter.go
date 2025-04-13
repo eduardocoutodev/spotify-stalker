@@ -1,6 +1,6 @@
 package converters
 
-import "github.com/eduardoooxd/spotify-tracker/internal/core/domain"
+import "github.com/eduardoooxd/spotify-stalker/internal/core/domain"
 
 func TransformTopTracks(spotifyApiResponse *domain.TopTracksSpotifyApiResponse) domain.TopTracksOutputResponse {
 	outputResponse := domain.TopTracksOutputResponse{

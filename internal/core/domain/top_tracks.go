@@ -12,7 +12,7 @@ type TopTrack struct {
 	Duration   int            `json:"durationMs"`
 	Popularity int            `json:"popularity"`
 	UserRank   int            `json:"userRank"`
-	SpotifyUrl string         `json:"spotify_url"`
+	SpotifyUrl string         `json:"spotifyUrl"`
 }
 
 type SimpleArtist struct {
@@ -25,7 +25,7 @@ type SimpleAlbum struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	ImageURL    string `json:"imageUrl"`
-	ReleaseDate string `json:"release_date"`
+	ReleaseDate string `json:"releaseDate"`
 }
 
 type TopTracksSpotifyApiResponse struct {
