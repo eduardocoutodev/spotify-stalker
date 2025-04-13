@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	converters "github.com/eduardoooxd/spotify-stalker/input/handlers/spotify/converter"
-	"github.com/eduardoooxd/spotify-stalker/internal/core/domain"
-	"github.com/eduardoooxd/spotify-stalker/output/spotify"
+	converters "github.com/eduardocoutodev/spotify-stalker/input/handlers/spotify/converter"
+	"github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
+	"github.com/eduardocoutodev/spotify-stalker/output/spotify"
 )
 
 func HandleTopTracks(w http.ResponseWriter, r *http.Request) {

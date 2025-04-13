@@ -1,4 +1,4 @@
-module github.com/eduardoooxd/spotify-stalker
+module github.com/eduardocoutodev/spotify-stalker
 
 go 1.22.5
 

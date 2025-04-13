@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/eduardoooxd/spotify-stalker/commons"
-	handler_spotify "github.com/eduardoooxd/spotify-stalker/input/handlers/spotify"
-	"github.com/eduardoooxd/spotify-stalker/input/middlewares"
+	"github.com/eduardocoutodev/spotify-stalker/commons"
+	handler_spotify "github.com/eduardocoutodev/spotify-stalker/input/handlers/spotify"
+	"github.com/eduardocoutodev/spotify-stalker/input/middlewares"
 	"github.com/joho/godotenv"
 )
 
