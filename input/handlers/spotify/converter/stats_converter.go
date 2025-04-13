@@ -1,12 +1,10 @@
-package handler_spotify
+package converters
 
-import (
-	core "github.com/eduardoooxd/spotify-tracker/core/domain"
-)
+import "github.com/eduardoooxd/spotify-tracker/internal/core/domain"
 
-func TransformTopTracks(spotifyApiResponse *core.TopTracksSpotifyApiResponse) core.TopTracksOutputResponse {
-	outputResponse := core.TopTracksOutputResponse{
-		Tracks: make([]core.TopTrack, len(spotifyApiResponse.Items)),
+func TransformTopTracks(spotifyApiResponse *domain.TopTracksSpotifyApiResponse) domain.TopTracksOutputResponse {
+	outputResponse := domain.TopTracksOutputResponse{
+		Tracks: make([]domain.TopTrack, len(spotifyApiResponse.Items)),
 	}
 
 	for i, apiTrack := range spotifyApiResponse.Items {
@@ -15,16 +13,16 @@ func TransformTopTracks(spotifyApiResponse *core.TopTracksSpotifyApiResponse) co
 			imageURL = apiTrack.Album.Images[0].URL
 		}
 
-		artists := make([]core.SimpleArtist, len(apiTrack.Artists))
+		artists := make([]domain.SimpleArtist, len(apiTrack.Artists))
 		for j, artist := range apiTrack.Artists {
-			artists[j] = core.SimpleArtist{
+			artists[j] = domain.SimpleArtist{
 				ID:   artist.ID,
 				Name: artist.Name,
 				URL:  artist.ExternalURLs.Spotify,
 			}
 		}
 
-		outputResponse.Tracks[i] = core.TopTrack{
+		outputResponse.Tracks[i] = domain.TopTrack{
 			ID:         apiTrack.ID,
 			Name:       apiTrack.Name,
 			Artists:    artists,
@@ -32,7 +30,7 @@ func TransformTopTracks(spotifyApiResponse *core.TopTracksSpotifyApiResponse) co
 			Popularity: apiTrack.Popularity,
 			SpotifyUrl: apiTrack.ExternalURLs.Spotify,
 			UserRank:   i + 1,
-			Album: core.SimpleAlbum{
+			Album: domain.SimpleAlbum{
 				ID:          apiTrack.Album.ID,
 				Name:        apiTrack.Album.Name,
 				ImageURL:    imageURL,

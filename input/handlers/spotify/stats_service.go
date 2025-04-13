@@ -1,4 +1,4 @@
-package handler_spotify
+package services
 
 import (
 	"encoding/json"
@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	core "github.com/eduardoooxd/spotify-tracker/core/domain"
+	converters "github.com/eduardoooxd/spotify-tracker/input/handlers/spotify/converter"
+	"github.com/eduardoooxd/spotify-tracker/internal/core/domain"
 	"github.com/eduardoooxd/spotify-tracker/output/spotify"
 )
 
@@ -43,7 +44,7 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var apiResponse core.TopTracksSpotifyApiResponse
+	var apiResponse domain.TopTracksSpotifyApiResponse
 	if err := json.Unmarshal(bodyBytes, &apiResponse); err != nil {
 		slog.Error("Failed reading response body", slog.Any("err", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -51,7 +52,7 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tracksResponseBody := TransformTopTracks(&apiResponse)
+	tracksResponseBody := converters.TransformTopTracks(&apiResponse)
 
 	if err := json.NewEncoder(w).Encode(&tracksResponseBody); err != nil {
 		slog.Error("Failed writing to the response", slog.Any("err", err))
