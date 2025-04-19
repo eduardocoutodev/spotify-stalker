@@ -7,13 +7,13 @@ import (
 
 func ConvertToUserCurrentPlaying(apiResponse *dto.UserCurrentPlayingSpotifyApiResponse) domain.UserCurrentPlaying {
 	return domain.UserCurrentPlaying{
-		Context: domain.MusicSessionContext{
+		Context: &domain.MusicSessionContext{
 			SpotifyHref: apiResponse.Context.Href,
 			Type:        domain.MusicSessionContextType(apiResponse.Context.Type),
 		},
 		IsPlaying:            apiResponse.IsPlaying,
-		CurrentlyPlayingType: apiResponse.CurrentlyPlayingType,
-		CurrentItemPlaying: domain.CurrentItemPlaying{
+		CurrentlyPlayingType: &apiResponse.CurrentlyPlayingType,
+		CurrentItemPlaying: &domain.CurrentItemPlaying{
 			ID:          apiResponse.Item.ID,
 			Album:       convertToAlbum(&apiResponse.Item.Album),
 			Artists:     ConvertToSimpleArtists(&apiResponse.Item.Artists),

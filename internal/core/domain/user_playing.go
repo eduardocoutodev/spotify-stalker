@@ -1,10 +1,10 @@
 package domain
 
 type UserCurrentPlaying struct {
-	Context              MusicSessionContext `json:"context"`
-	IsPlaying            bool                `json:"isPlaying"`
-	CurrentlyPlayingType string              `json:"currentlyPlayingType"`
-	CurrentItemPlaying   CurrentItemPlaying  `json:"currentItemPlaying"`
+	Context              *MusicSessionContext `json:"context"`
+	IsPlaying            bool                 `json:"isPlaying"`
+	CurrentlyPlayingType *string              `json:"currentlyPlayingType"`
+	CurrentItemPlaying   *CurrentItemPlaying  `json:"currentItemPlaying"`
 }
 
 type MusicSessionContextType string

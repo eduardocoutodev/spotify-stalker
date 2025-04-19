@@ -11,6 +11,7 @@ import (
 
 	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
 	converters "github.com/eduardocoutodev/spotify-stalker/internal/core/converters/in"
+	"github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
 )
 
 func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
@@ -28,10 +29,10 @@ func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
-			Method:             "GET",
-			Endpoint:           "https://api.spotify.com/v1/me/player/currently-playing",
-			Headers:            reqHeaders,
-			ExpectedStatusCode: http.StatusOK,
+			Method:              "GET",
+			Endpoint:            "https://api.spotify.com/v1/me/player/currently-playing",
+			Headers:             reqHeaders,
+			ExpectedStatusCodes: []int{http.StatusOK, http.StatusNoContent},
 		},
 	)
 
@@ -43,6 +44,21 @@ func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNoContent {
+		emptyPlayingBody := domain.UserCurrentPlaying{
+			IsPlaying: false,
+		}
+
+		if err := json.NewEncoder(w).Encode(&emptyPlayingBody); err != nil {
+			slog.Error("Failed writing to the response", slog.Any("err", err))
+
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to encode response body"})
+			return
+		}
+		return
+	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {

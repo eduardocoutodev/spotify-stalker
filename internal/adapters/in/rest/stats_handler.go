@@ -58,10 +58,10 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
-			Method:             "GET",
-			Endpoint:           fmt.Sprintf("https://api.spotify.com/v1/me/top/tracks?time_range=%s&limit=%d&offset=%d", timeRange, limit, offset),
-			Headers:            reqHeaders,
-			ExpectedStatusCode: http.StatusOK,
+			Method:              "GET",
+			Endpoint:            fmt.Sprintf("https://api.spotify.com/v1/me/top/tracks?time_range=%s&limit=%d&offset=%d", timeRange, limit, offset),
+			Headers:             reqHeaders,
+			ExpectedStatusCodes: []int{http.StatusOK},
 		},
 	)
 

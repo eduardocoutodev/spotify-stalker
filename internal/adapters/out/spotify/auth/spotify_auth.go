@@ -79,11 +79,11 @@ func refreshAccessToken(refreshToken string) (string, int, error) {
 
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
-			Method:             "POST",
-			Endpoint:           "https://accounts.spotify.com/api/token",
-			Headers:            reqHeaders,
-			ExpectedStatusCode: http.StatusOK,
-			Body:               reqBody,
+			Method:              "POST",
+			Endpoint:            "https://accounts.spotify.com/api/token",
+			Headers:             reqHeaders,
+			ExpectedStatusCodes: []int{http.StatusOK},
+			Body:                reqBody,
 		},
 	)
 

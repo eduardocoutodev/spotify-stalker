@@ -6,14 +6,16 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/eduardocoutodev/spotify-stalker/pkg"
 )
 
 type SpotifyRequestArguments struct {
-	Method             string
-	Endpoint           string
-	Headers            map[string]string
-	ExpectedStatusCode int
-	Body               url.Values
+	Method              string
+	Endpoint            string
+	Headers             map[string]string
+	ExpectedStatusCodes []int
+	Body                url.Values
 }
 
 func FetchSpotifyWebAPI(requestArguments SpotifyRequestArguments) (*http.Response, error) {
@@ -38,10 +40,10 @@ func FetchSpotifyWebAPI(requestArguments SpotifyRequestArguments) (*http.Respons
 		return nil, fmt.Errorf("failed to execute request to %s: %w", requestArguments.Endpoint, err)
 	}
 
-	if resp.StatusCode != requestArguments.ExpectedStatusCode {
+	if pkg.FindIndex(requestArguments.ExpectedStatusCodes, func(e int) bool { return e == resp.StatusCode }) == -1 {
 		resp.Body.Close()
-		return nil, fmt.Errorf("unexpected status code: got %d, expected %d",
-			resp.StatusCode, requestArguments.ExpectedStatusCode)
+		return nil, fmt.Errorf("unexpected status code: got %d, expected %v",
+			resp.StatusCode, requestArguments.ExpectedStatusCodes)
 	}
 
 	return resp, err
