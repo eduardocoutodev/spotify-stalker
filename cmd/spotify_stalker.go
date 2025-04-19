@@ -31,6 +31,7 @@ func main() {
 	mux.HandleFunc("GET /spotify/callback", in.HandleSpotifyAuthFlowCallback)
 	mux.HandleFunc("GET /stats/tracks", in.HandleTopTracks)
 	mux.HandleFunc("GET /user/music/current", in.HandleUserCurrentPlaying)
+	mux.HandleFunc("PUT /user/player/seek", in.HandleUserPlayerSeek)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 
