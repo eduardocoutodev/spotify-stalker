@@ -1,4 +1,4 @@
-package services
+package in
 
 import (
 	"encoding/json"
@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	converters "github.com/eduardocoutodev/spotify-stalker/input/handlers/spotify/converter"
+	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
+	converters "github.com/eduardocoutodev/spotify-stalker/internal/core/converters/in"
 	"github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
-	"github.com/eduardocoutodev/spotify-stalker/output/spotify"
 )
 
 func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
@@ -18,8 +18,8 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 	reqHeaders := make(map[string]string)
 	reqHeaders["Authorization"] = "Bearer " + spotifyToken
 
-	resp, err := spotify.FetchSpotifyWebAPI(
-		spotify.SpotifyRequestArguments{
+	resp, err := out.FetchSpotifyWebAPI(
+		out.SpotifyRequestArguments{
 			Method:             "GET",
 			Endpoint:           "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10",
 			Headers:            reqHeaders,

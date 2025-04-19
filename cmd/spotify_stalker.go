@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/eduardocoutodev/spotify-stalker/commons"
-	handler_spotify "github.com/eduardocoutodev/spotify-stalker/input/handlers/spotify"
-	"github.com/eduardocoutodev/spotify-stalker/input/middlewares"
+	in "github.com/eduardocoutodev/spotify-stalker/internal/adapters/in/rest"
+	middlewares "github.com/eduardocoutodev/spotify-stalker/internal/adapters/in/rest/middleware"
+	"github.com/eduardocoutodev/spotify-stalker/internal/config"
 	"github.com/joho/godotenv"
 )
 
@@ -22,11 +22,11 @@ func main() {
 	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "got path\n")
 	})
-	mux.HandleFunc("GET /top/tracks", handler_spotify.HandleTopTracks)
+	mux.HandleFunc("GET /top/tracks", in.HandleTopTracks)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 
-	port := commons.GetEnv("SERVER_PORT", "8080")
+	port := config.GetEnv("SERVER_PORT", "8080")
 	addressToListen := fmt.Sprintf(":%s", port)
 	slog.Info("Started HTTP Server", slog.String("address", addressToListen))
 	if err := http.ListenAndServe(addressToListen, handler); err != nil {

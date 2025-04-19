@@ -1,4 +1,4 @@
-package converters
+package in
 
 import "github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
 
