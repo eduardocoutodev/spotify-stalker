@@ -10,6 +10,7 @@ import (
 	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/auth"
 	"github.com/eduardocoutodev/spotify-stalker/internal/config"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -33,6 +34,12 @@ func main() {
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 
+	feOrigin := config.GetEnv("FE_DOMAIN", "http://localhost:3000")
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{feOrigin},
+	})
+
+	handler = cors.Handler(handler)
 	port := config.GetEnv("SERVER_PORT", "8080")
 	addressToListen := fmt.Sprintf(":%s", port)
 	slog.Info("Started HTTP Server", slog.String("address", addressToListen))
