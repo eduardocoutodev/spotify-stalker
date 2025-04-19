@@ -5,8 +5,8 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 
+	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/auth"
 	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/dto"
 
 	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
@@ -14,7 +14,14 @@ import (
 )
 
 func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
-	spotifyToken := os.Getenv("SPOTIFY_TOKEN")
+	tokenManager := auth.GetInstance()
+
+	spotifyToken, err := tokenManager.GetAuthToken()
+	if err != nil {
+		slog.Error("Error getting auth token", slog.Any("err", err))
+		http.Error(w, "Error authenticating with Spotify", http.StatusInternalServerError)
+		return
+	}
 
 	reqHeaders := make(map[string]string)
 	reqHeaders["Authorization"] = "Bearer " + spotifyToken

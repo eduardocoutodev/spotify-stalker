@@ -2,7 +2,10 @@ package out
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 type SpotifyRequestArguments struct {
@@ -10,10 +13,16 @@ type SpotifyRequestArguments struct {
 	Endpoint           string
 	Headers            map[string]string
 	ExpectedStatusCode int
+	Body               url.Values
 }
 
 func FetchSpotifyWebAPI(requestArguments SpotifyRequestArguments) (*http.Response, error) {
-	req, err := http.NewRequest(requestArguments.Method, requestArguments.Endpoint, nil)
+	var reqBody io.Reader
+	if requestArguments.Body != nil {
+		reqBody = strings.NewReader(requestArguments.Body.Encode())
+	}
+
+	req, err := http.NewRequest(requestArguments.Method, requestArguments.Endpoint, reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for %s: %w", requestArguments.Endpoint, err)
 	}
