@@ -18,6 +18,7 @@ func ConvertToUserCurrentPlaying(apiResponse *dto.UserCurrentPlayingSpotifyApiRe
 			Album:       convertToAlbum(&apiResponse.Item.Album),
 			Artists:     ConvertToSimpleArtists(&apiResponse.Item.Artists),
 			DurationMS:  apiResponse.Item.DurationMS,
+			ProgresMS:   apiResponse.ProgressMS,
 			Explicit:    apiResponse.Item.Explicit,
 			SpotifyHref: apiResponse.Item.ExternalUrls.Spotify,
 			Name:        apiResponse.Item.Name,

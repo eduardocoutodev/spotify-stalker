@@ -26,6 +26,7 @@ type CurrentItemPlaying struct {
 	Album       SimpleAlbum    `json:"album"`
 	Artists     []SimpleArtist `json:"artists"`
 	DurationMS  int64          `json:"durationMs"`
+	ProgresMS   int64          `json:"progressMs"`
 	Explicit    bool           `json:"explicit"`
 	SpotifyHref string         `json:"spotifyHref"`
 	Name        string         `json:"name"`
