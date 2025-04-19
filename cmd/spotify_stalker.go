@@ -36,7 +36,9 @@ func main() {
 
 	feOrigin := config.GetEnv("FE_DOMAIN", "http://localhost:3000")
 	cors := cors.New(cors.Options{
-		AllowedOrigins: []string{feOrigin},
+		AllowedOrigins:   []string{feOrigin},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowCredentials: true,
 	})
 
 	handler = cors.Handler(handler)
@@ -46,5 +48,4 @@ func main() {
 	if err := http.ListenAndServe(addressToListen, handler); err != nil {
 		slog.Error("Error starting HTTP server", slog.Any("err", err))
 	}
-
 }
