@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"os"
 
-	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
 	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/dto"
+
+	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
 	converters "github.com/eduardocoutodev/spotify-stalker/internal/core/converters/in"
 )
 
-func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
+func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
 	spotifyToken := os.Getenv("SPOTIFY_TOKEN")
 
 	reqHeaders := make(map[string]string)
@@ -21,7 +22,7 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
 			Method:             "GET",
-			Endpoint:           "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10",
+			Endpoint:           "https://api.spotify.com/v1/me/player/currently-playing",
 			Headers:            reqHeaders,
 			ExpectedStatusCode: http.StatusOK,
 		},
@@ -44,7 +45,7 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var apiResponse dto.TopTracksSpotifyApiResponse
+	var apiResponse dto.UserCurrentPlayingSpotifyApiResponse
 	if err := json.Unmarshal(bodyBytes, &apiResponse); err != nil {
 		slog.Error("Failed reading response body", slog.Any("err", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -52,9 +53,9 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tracksResponseBody := converters.TransformTopTracks(&apiResponse)
+	currentPlayingBody := converters.ConvertToUserCurrentPlaying(&apiResponse)
 
-	if err := json.NewEncoder(w).Encode(&tracksResponseBody); err != nil {
+	if err := json.NewEncoder(w).Encode(&currentPlayingBody); err != nil {
 		slog.Error("Failed writing to the response", slog.Any("err", err))
 
 		w.WriteHeader(http.StatusInternalServerError)

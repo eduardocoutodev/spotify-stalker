@@ -1,8 +1,11 @@
 package in
 
-import "github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
+import (
+	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/dto"
+	"github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
+)
 
-func TransformTopTracks(spotifyApiResponse *domain.TopTracksSpotifyApiResponse) domain.TopTracksOutputResponse {
+func TransformTopTracks(spotifyApiResponse *dto.TopTracksSpotifyApiResponse) domain.TopTracksOutputResponse {
 	outputResponse := domain.TopTracksOutputResponse{
 		Tracks: make([]domain.TopTrack, len(spotifyApiResponse.Items)),
 	}
@@ -13,14 +16,7 @@ func TransformTopTracks(spotifyApiResponse *domain.TopTracksSpotifyApiResponse) 
 			imageURL = apiTrack.Album.Images[0].URL
 		}
 
-		artists := make([]domain.SimpleArtist, len(apiTrack.Artists))
-		for j, artist := range apiTrack.Artists {
-			artists[j] = domain.SimpleArtist{
-				ID:   artist.ID,
-				Name: artist.Name,
-				URL:  artist.ExternalURLs.Spotify,
-			}
-		}
+		artists := ConvertToSimpleArtists(&apiTrack.Artists)
 
 		outputResponse.Tracks[i] = domain.TopTrack{
 			ID:         apiTrack.ID,

@@ -22,7 +22,8 @@ func main() {
 	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "got path\n")
 	})
-	mux.HandleFunc("GET /top/tracks", in.HandleTopTracks)
+	mux.HandleFunc("GET /stats/tracks", in.HandleTopTracks)
+	mux.HandleFunc("GET /user/music/current", in.HandleUserCurrentPlaying)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 
