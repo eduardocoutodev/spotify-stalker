@@ -2,9 +2,11 @@ package in
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
 	"github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify/auth"
@@ -25,10 +27,39 @@ func HandleTopTracks(w http.ResponseWriter, r *http.Request) {
 	reqHeaders := make(map[string]string)
 	reqHeaders["Authorization"] = "Bearer " + spotifyToken
 
+	timeRange := "long_term"
+	if r.URL.Query().Has("time_range") {
+		timeRange = r.URL.Query().Get("time_range")
+	}
+
+	limit := 10
+	if r.URL.Query().Has("limit") {
+		limitInt, err := strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil {
+			slog.Warn("operation='HandleTopTracks', message='Invalid Number on Limit' ", slog.Any("err", err), slog.Any("userInput", r.URL.Query().Get("limit")))
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Limit query should be a number"})
+			return
+		}
+		limit = limitInt
+	}
+
+	offset := 0
+	if r.URL.Query().Has("offset") {
+		offsetInt, err := strconv.Atoi(r.URL.Query().Get("offset"))
+		if err != nil {
+			slog.Warn("operation='HandleTopTracks', message='Invalid Number on Offset' ", slog.Any("err", err), slog.Any("userInput", r.URL.Query().Get("offset")))
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Offset query should be a number"})
+			return
+		}
+		offset = offsetInt
+	}
+
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
 			Method:             "GET",
-			Endpoint:           "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10",
+			Endpoint:           fmt.Sprintf("https://api.spotify.com/v1/me/top/tracks?time_range=%s&limit=%d&offset=%d", timeRange, limit, offset),
 			Headers:            reqHeaders,
 			ExpectedStatusCode: http.StatusOK,
 		},
