@@ -141,6 +141,71 @@ func HandlePauseMusic(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Success on pausing the player"})
 }
 
+func HandleSkipToNext(w http.ResponseWriter, r *http.Request) {
+	tokenManager := auth.GetInstance()
+
+	spotifyToken, err := tokenManager.GetAuthToken()
+	if err != nil {
+		slog.Error("Error getting auth token", slog.Any("err", err))
+		http.Error(w, "Error authenticating with Spotify", http.StatusInternalServerError)
+		return
+	}
+
+	reqHeaders := make(map[string]string)
+	reqHeaders["Authorization"] = "Bearer " + spotifyToken
+
+	baseUrl, err := url.Parse("https://api.spotify.com/v1/me/player/next")
+	if err != nil {
+		slog.Error("Error parsing base url", slog.Any("baseUrl", baseUrl), slog.Any("err", err))
+		http.Error(w, "Error parsing base URL to skip to next music", http.StatusInternalServerError)
+		return
+	}
+
+	deviceId := r.URL.Query().Get("deviceId")
+	if deviceId != "" {
+		q := baseUrl.Query()
+		q.Set("device_id", deviceId)
+		baseUrl.RawQuery = q.Encode()
+	}
+
+	skipToNextEndpoint := baseUrl.String()
+	slog.Debug("Resume endpoint generated", slog.String("skipToNext", skipToNextEndpoint))
+	resp, err := out.FetchSpotifyWebAPI(
+		out.SpotifyRequestArguments{
+			Method:              "POST",
+			Endpoint:            skipToNextEndpoint,
+			Headers:             reqHeaders,
+			ExpectedStatusCodes: []int{http.StatusOK, http.StatusForbidden},
+		},
+	)
+
+	if err != nil {
+		slog.Error("Failed making the request to spotify", slog.Any("err", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to skip to next from Spotify API"})
+		return
+	}
+
+	defer resp.Body.Close()
+
+	// Flow for bad request (trying to stop, when it's already resumed)
+	if resp.StatusCode == http.StatusForbidden {
+		slog.Warn("Client tried to skip to next music when is not possible")
+		// Ideally this should be a http.StatusConflict, but I will keep consistent with spotify api status code
+		w.WriteHeader(http.StatusForbidden)
+		errorResponse := dto.ErrorResponse{
+			Error: dto.ErrorBody{
+				Message: "Can't skip to next anymore",
+			},
+		}
+		json.NewEncoder(w).Encode(&errorResponse)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Success on skipping to next"})
+}
+
 func HandleSkipToPrevious(w http.ResponseWriter, r *http.Request) {
 	tokenManager := auth.GetInstance()
 
@@ -168,12 +233,12 @@ func HandleSkipToPrevious(w http.ResponseWriter, r *http.Request) {
 		baseUrl.RawQuery = q.Encode()
 	}
 
-	resumeEndpoint := baseUrl.String()
-	slog.Debug("Resume endpoint generated", slog.String("resumeEndpoint", resumeEndpoint))
+	previousEndpoint := baseUrl.String()
+	slog.Debug("Skip to previous endpoint generated", slog.String("skipPreviousEndpoint", previousEndpoint))
 	resp, err := out.FetchSpotifyWebAPI(
 		out.SpotifyRequestArguments{
 			Method:              "POST",
-			Endpoint:            resumeEndpoint,
+			Endpoint:            previousEndpoint,
 			Headers:             reqHeaders,
 			ExpectedStatusCodes: []int{http.StatusOK, http.StatusForbidden},
 		},
@@ -190,7 +255,7 @@ func HandleSkipToPrevious(w http.ResponseWriter, r *http.Request) {
 
 	// Flow for bad request (trying to stop, when it's already resumed)
 	if resp.StatusCode == http.StatusForbidden {
-		slog.Warn("Client tried to resume music when is already playing")
+		slog.Warn("Client tried to skip to previous music when is not possible")
 		// Ideally this should be a http.StatusConflict, but I will keep consistent with spotify api status code
 		w.WriteHeader(http.StatusForbidden)
 		errorResponse := dto.ErrorResponse{
