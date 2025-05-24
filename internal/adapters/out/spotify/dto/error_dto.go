@@ -1,5 +1,9 @@
 package dto
 
 type ErrorResponse struct {
-	ErrorMessage string `json:"errorMessage"`
+	Error ErrorBody `json:"error"`
+}
+
+type ErrorBody struct {
+	Message string `json:"message"`
 }

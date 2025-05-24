@@ -64,7 +64,9 @@ func HandleResumeMusic(w http.ResponseWriter, r *http.Request) {
 		// Ideally this should be a http.StatusConflict, but I will keep consistent with spotify api status code
 		w.WriteHeader(http.StatusForbidden)
 		errorResponse := dto.ErrorResponse{
-			ErrorMessage: "Music is already resumed",
+			Error: dto.ErrorBody{
+				Message: "Music is already resumed",
+			},
 		}
 		json.NewEncoder(w).Encode(&errorResponse)
 		return
@@ -127,7 +129,9 @@ func HandlePauseMusic(w http.ResponseWriter, r *http.Request) {
 		// Ideally this should be a http.StatusConflict, but I will keep consistent with spotify api status code
 		w.WriteHeader(http.StatusForbidden)
 		errorResponse := dto.ErrorResponse{
-			ErrorMessage: "Music is already stopped",
+			Error: dto.ErrorBody{
+				Message: "Music is already stopped",
+			},
 		}
 		json.NewEncoder(w).Encode(&errorResponse)
 		return
