@@ -2,3 +2,4 @@
 - Ter uma queue ou wishlist de musicas que devo ouvir ?
 - Allow users to search and suggest me music
 - Allow people to listen a snippet of the current music
+- Use SSE to push changes to the state to the clients

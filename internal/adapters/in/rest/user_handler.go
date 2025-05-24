@@ -11,7 +11,6 @@ import (
 
 	out "github.com/eduardocoutodev/spotify-stalker/internal/adapters/out/spotify"
 	converters "github.com/eduardocoutodev/spotify-stalker/internal/core/converters/in"
-	"github.com/eduardocoutodev/spotify-stalker/internal/core/domain"
 )
 
 func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
@@ -46,17 +45,7 @@ func HandleUserCurrentPlaying(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNoContent {
-		emptyPlayingBody := domain.UserCurrentPlaying{
-			IsPlaying: false,
-		}
-
-		if err := json.NewEncoder(w).Encode(&emptyPlayingBody); err != nil {
-			slog.Error("Failed writing to the response", slog.Any("err", err))
-
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to encode response body"})
-			return
-		}
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 

@@ -36,8 +36,8 @@ func main() {
 	mux.HandleFunc("PUT /user/player/seek", in.HandleUserPlayerSeek)
 	mux.HandleFunc("PUT /user/player/resume", in.HandleResumeMusic)
 	mux.HandleFunc("PUT /user/player/pause", in.HandlePauseMusic)
-	mux.HandleFunc("PUT /user/player/skip/next", in.HandleSkipToNext)
-	mux.HandleFunc("PUT /user/player/skip/previous", in.HandleSkipToPrevious)
+	mux.HandleFunc("POST /user/player/skip/next", in.HandleSkipToNext)
+	mux.HandleFunc("POST /user/player/skip/previous", in.HandleSkipToPrevious)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 
