@@ -3,6 +3,7 @@ package out
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -41,7 +42,14 @@ func FetchSpotifyWebAPI(requestArguments SpotifyRequestArguments) (*http.Respons
 	}
 
 	if pkg.FindIndex(requestArguments.ExpectedStatusCodes, func(e int) bool { return e == resp.StatusCode }) == -1 {
-		resp.Body.Close()
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			slog.Error("Not able to extract body from response")
+		} else {
+			slog.Error("Non expected status code", slog.Any("body", body))
+		}
+
 		return nil, fmt.Errorf("unexpected status code: got %d, expected %v",
 			resp.StatusCode, requestArguments.ExpectedStatusCodes)
 	}

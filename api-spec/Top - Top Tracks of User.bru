@@ -5,7 +5,13 @@ meta {
 }
 
 get {
-  url: https://api.spotify-stalker.eduardocouto.dev/stats/tracks
+  url: http://localhost:8080/stats/tracks?limit=1&time_range=short_term&offset=10
   body: none
   auth: none
+}
+
+params:query {
+  limit: 1
+  time_range: short_term
+  offset: 10
 }
