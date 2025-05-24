@@ -34,6 +34,7 @@ func main() {
 
 	// Player handlers
 	mux.HandleFunc("PUT /user/player/seek", in.HandleUserPlayerSeek)
+	mux.HandleFunc("PUT /user/player/resume", in.HandleResumeMusic)
 	mux.HandleFunc("PUT /user/player/pause", in.HandlePauseMusic)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
