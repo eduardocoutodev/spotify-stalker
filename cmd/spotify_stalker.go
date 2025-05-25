@@ -38,6 +38,7 @@ func main() {
 	mux.HandleFunc("PUT /user/player/pause", in.HandlePauseMusic)
 	mux.HandleFunc("POST /user/player/skip/next", in.HandleSkipToNext)
 	mux.HandleFunc("POST /user/player/skip/previous", in.HandleSkipToPrevious)
+	mux.HandleFunc("GET /user/player/queue", in.HandleGetQueue)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
 	handler = middlewares.RateLimitMiddleware(handler)

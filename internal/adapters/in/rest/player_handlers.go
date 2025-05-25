@@ -270,3 +270,54 @@ func HandleSkipToPrevious(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Success on skipping to previous"})
 }
+
+func HandleGetQueue(w http.ResponseWriter, r *http.Request) {
+	tokenManager := auth.GetInstance()
+
+	spotifyToken, err := tokenManager.GetAuthToken()
+	if err != nil {
+		slog.Error("Error getting auth token", slog.Any("err", err))
+		http.Error(w, "Error authenticating with Spotify", http.StatusInternalServerError)
+		return
+	}
+
+	reqHeaders := make(map[string]string)
+	reqHeaders["Authorization"] = "Bearer " + spotifyToken
+
+	baseUrl, err := url.Parse("https://api.spotify.com/v1/me/player/queue")
+	if err != nil {
+		slog.Error("Error parsing base url", slog.Any("baseUrl", baseUrl), slog.Any("err", err))
+		http.Error(w, "Error parsing base URL to get queue", http.StatusInternalServerError)
+		return
+	}
+
+	queueEndpoint := baseUrl.String()
+	slog.Debug("Queue endpoint generated", slog.String("queueEndpoint", queueEndpoint))
+	resp, err := out.FetchSpotifyWebAPI(
+		out.SpotifyRequestArguments{
+			Method:              "GET",
+			Endpoint:            queueEndpoint,
+			Headers:             reqHeaders,
+			ExpectedStatusCodes: []int{http.StatusOK},
+		},
+	)
+
+	if err != nil {
+		slog.Error("Failed making the request to spotify", slog.Any("err", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to get queue from Spotify API"})
+		return
+	}
+
+	defer resp.Body.Close()
+
+	var queueResponse dto.QueueResponse
+	if err := json.NewDecoder(resp.Body).Decode(&queueResponse); err != nil {
+		slog.Error("Error decoding queue response", slog.Any("err", err))
+		http.Error(w, "Error processing queue response", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(queueResponse)
+}

@@ -20,6 +20,7 @@ type SpotifyRequestArguments struct {
 }
 
 func FetchSpotifyWebAPI(requestArguments SpotifyRequestArguments) (*http.Response, error) {
+	slog.Info("Fetching Spotify Web API", slog.String("method", requestArguments.Method), slog.String("endpoint", requestArguments.Endpoint))
 	var reqBody io.Reader
 	if requestArguments.Body != nil {
 		reqBody = strings.NewReader(requestArguments.Body.Encode())
