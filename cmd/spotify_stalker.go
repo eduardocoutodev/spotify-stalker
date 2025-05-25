@@ -40,6 +40,7 @@ func main() {
 	mux.HandleFunc("POST /user/player/skip/previous", in.HandleSkipToPrevious)
 
 	handler := middlewares.JsonContentTypeMiddleware(mux)
+	handler = middlewares.RateLimitMiddleware(handler)
 
 	feOrigin := config.GetEnv("FE_DOMAIN", "http://localhost:3000")
 	cors := cors.New(cors.Options{
