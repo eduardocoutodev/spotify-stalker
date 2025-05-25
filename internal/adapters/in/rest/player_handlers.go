@@ -318,6 +318,7 @@ func HandleGetQueue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	outboundResponse := dto.ConvertToQueueOutbound(queueResponse)
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(queueResponse)
+	json.NewEncoder(w).Encode(outboundResponse)
 }
