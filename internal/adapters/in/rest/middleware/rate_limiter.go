@@ -35,6 +35,7 @@ func RateLimitMiddleware(next http.Handler) http.Handler {
 			// X-Forwarded-For can contain multiple IPs, take the first one
 			ips := strings.Split(forwardedFor, ",")
 			ip = strings.TrimSpace(ips[0])
+			slog.Info("Picked X-Forwarded-For", slog.String("ip", ip))
 		} else {
 			// Fallback to RemoteAddr and remove port
 			if len(host) >= 1 {
