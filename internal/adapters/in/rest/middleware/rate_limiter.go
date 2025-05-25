@@ -29,12 +29,19 @@ func getLimiter(ip string) *rate.Limiter {
 func RateLimitMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		host := strings.Split(r.RemoteAddr, ":")
-		// Remove port from IP address
+		// Get IP from X-Forwarded-For header first, fallback to RemoteAddr
 		var ip string
-		if len(host) >= 1 {
-			ip = strings.Join(host[0:len(host)-1], ":")
+		if forwardedFor := r.Header.Get("X-Forwarded-For"); forwardedFor != "" {
+			// X-Forwarded-For can contain multiple IPs, take the first one
+			ips := strings.Split(forwardedFor, ",")
+			ip = strings.TrimSpace(ips[0])
 		} else {
-			ip = host[0]
+			// Fallback to RemoteAddr and remove port
+			if len(host) >= 1 {
+				ip = strings.Join(host[0:len(host)-1], ":")
+			} else {
+				ip = host[0]
+			}
 		}
 
 		slog.Info("Rate limit middleware", slog.String("ip", ip))
